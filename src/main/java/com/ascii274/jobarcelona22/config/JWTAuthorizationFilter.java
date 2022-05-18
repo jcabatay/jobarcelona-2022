@@ -1,6 +1,7 @@
 package com.ascii274.jobarcelona22.config;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,6 +22,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	private final String HEADER = "Authorization";
 	private final String PREFIX = "Bearer ";
 	private final String SECRET = "Yda47dKBrx14kTAZXATM7OH29BtDgKUY8hYqmeiSCf4=";
+
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
@@ -44,10 +46,12 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	}
 
 	private Claims validateToken(HttpServletRequest request) {
-		Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+
+		byte[] keyBytes = Decoders.BASE64.decode(SECRET);
+		Key key = Keys.hmacShaKeyFor(keyBytes);
 		String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
-		return Jwts.parser().setSigningKey(SECRET.getBytes()).parseClaimsJws(jwtToken).getBody();
-//		return Jwts.parserBuilder().requireAudience(SECRET).build().parse(jwtToken);
+		return Jwts.parserBuilder().setSigningKey( key ).build().parseClaimsJws(jwtToken).getBody();
+
 	}
 
 	/**

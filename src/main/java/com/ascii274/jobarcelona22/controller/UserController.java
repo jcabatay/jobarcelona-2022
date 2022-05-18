@@ -21,14 +21,16 @@ import reactor.core.publisher.Mono;
 
 import java.security.Key;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.ascii274.jobarcelona22.config.ValidEmailPassword.isValidPassword;
+import static com.ascii274.jobarcelona22.config.ValidEmailPassword.validarEmail;
 
 @RestController
 @RequestMapping(value="/jobarcelona")
 public class UserController {
     private static final Log log = LogFactory.getLog(UserController.class);
+    private static final String secretKey = "Yda47dKBrx14kTAZXATM7OH29BtDgKUY8hYqmeiSCf4=";
 
     @Autowired
     UserRepository userRepository;
@@ -56,15 +58,12 @@ public class UserController {
                 Criteria.where("").andOperator(
                         Criteria.where("username").is(user.getUsername()),
                         Criteria.where("password").is(user.getPassword())
-                )
-        );
+                ));
         List<User> users= mongoTemplate.find(query,User.class);
-        log.info("***** " + query + " ****");
         if(users.size()>0){
             users.get(0).setToken(getJWTToken(user));
             return users.toString();
         }else {
-            log.info("***** Invalid username or password ****");
             return "Invalid username or password";
         }
     }
@@ -74,6 +73,7 @@ public class UserController {
      */
     @PostMapping (value = "/signup")
     public String signup(@RequestBody User user){
+
         User userExist = userRepository.findByUsername(user.getUsername());
         if(!isValidPassword(user.getPassword())){
             return "La contraeña ha de tener almenos 8 caracteres, 1 mayúscula, 1 minúscula-";
@@ -94,7 +94,7 @@ public class UserController {
 
     /**
      * - Devuelve toda la lista de usaurios -> ok
-     * - Accesos solo admin
+     * - Accesos solo admin -> solo con token
      */
     @GetMapping(value = "/users")
     public Mono<List<UserDto>> users(){
@@ -103,65 +103,20 @@ public class UserController {
         return Mono.just(listUsers);
     }
 
-    public static boolean validarEmail(String email){
-        Pattern pattern = Pattern.compile("^([0-9a-zA-Z]+[-._+&])*[0-9a-zA-Z]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,6}$");
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
-    }
-
-    public static boolean isValidPassword(String password){
-        String regex = "^(?=.*[0-9])"
-                + "(?=.*[a-z])(?=.*[A-Z])"
-                + "(?=\\S+$).{8,20}$";
-        Pattern p = Pattern.compile(regex);
-        if(password == null || password == ""){
-            return false;
-        }
-        Matcher m = p.matcher(password);
-        return m.matches();
-    }
     private String getJWTToken(User user){
-        String secretKey = "Yda47dKBrx14kTAZXATM7OH29BtDgKUY8hYqmeiSCf4=";
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         Key key = Keys.hmacShaKeyFor(keyBytes);
         List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-               .commaSeparatedStringToAuthorityList("ROLE_USER");
-//        Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+                .commaSeparatedStringToAuthorityList("ROLE_USER");
         String token = Jwts.builder()
                 .setId(user.getUsername())
                 .setSubject(user.getEmail())
-//                .claim("scope",user.getRol(),
                 .claim("authorities",
                         grantedAuthorities.stream()
                                 .map(GrantedAuthority::getAuthority)
                                 .collect(Collectors.toList()))
-//                .signWith(SignatureAlgorithm.HS256,secretKey.getBytes(UTF_8))
-//                .signWith(key,SignatureAlgorithm.HS256)
-                .signWith(SignatureAlgorithm.HS256,secretKey.getBytes())
-//                .signWith(key)
+                .signWith(key)
                 .compact();
         return "Bearer " + token;
     }
-
-
-
-    //TODO delete below
-/*    private String getJWTToken_2(String username) {
-        String secretKey = "mySecretKey";
-        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                .commaSeparatedStringToAuthorityList("ROLE_USER");
-        String token = Jwts
-                .builder()
-                .setId("softtekJWT")
-                .setSubject(username)
-                .claim("authorities",
-                        grantedAuthorities.stream()
-                                .map(GrantedAuthority::getAuthority)
-                                .collect(Collectors.toList()))
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 600000))
-                .signWith(SignatureAlgorithm.HS512,secretKey.getBytes()).compact();
-        return "Bearer " + token;
-    }*/
-
 }
