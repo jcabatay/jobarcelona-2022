@@ -5,7 +5,6 @@ import com.ascii274.jobarcelona22.model.UserDto;
 import com.ascii274.jobarcelona22.repository.UserDtoRepository;
 import com.ascii274.jobarcelona22.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.apache.juli.logging.Log;
@@ -23,8 +22,8 @@ import java.security.Key;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.ascii274.jobarcelona22.config.ValidEmailPassword.isValidPassword;
-import static com.ascii274.jobarcelona22.config.ValidEmailPassword.validarEmail;
+import static com.ascii274.jobarcelona22.config.ValidationEmailPassword.isValidPassword;
+import static com.ascii274.jobarcelona22.config.ValidationEmailPassword.validarEmail;
 
 @RestController
 @RequestMapping(value="/jobarcelona")
