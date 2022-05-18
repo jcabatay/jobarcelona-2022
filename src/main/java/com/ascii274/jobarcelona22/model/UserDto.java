@@ -1,8 +1,19 @@
 package com.ascii274.jobarcelona22.model;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+/**
+ * UserDto para no ver todos los datos de user.
+ */
+
+@Document(collection="usuarios")
 public class UserDto {
+    @Field(name="username")
     private String username;
-    private String password;
+    @Field(name="rol")
+    private String rol;
+    @Field(name="token")
     private String token;
 
     public String getUsername() {
@@ -13,12 +24,12 @@ public class UserDto {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getRol() {
+        return rol;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setRol(String rol) {
+        this.rol = rol;
     }
 
     public String getToken() {
@@ -28,4 +39,6 @@ public class UserDto {
     public void setToken(String token) {
         this.token = token;
     }
+
+
 }

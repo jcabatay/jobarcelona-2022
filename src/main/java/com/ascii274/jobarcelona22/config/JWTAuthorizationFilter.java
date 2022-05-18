@@ -1,6 +1,7 @@
 package com.ascii274.jobarcelona22.config;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.Key;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +20,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
 	private final String HEADER = "Authorization";
 	private final String PREFIX = "Bearer ";
-	private final String SECRET = "mySecretKey";
+	private final String SECRET = "Yda47dKBrx14kTAZXATM7OH29BtDgKUY8hYqmeiSCf4=";
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
@@ -42,9 +44,10 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	}
 
 	private Claims validateToken(HttpServletRequest request) {
+		Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 		String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
 		return Jwts.parser().setSigningKey(SECRET.getBytes()).parseClaimsJws(jwtToken).getBody();
-
+//		return Jwts.parserBuilder().requireAudience(SECRET).build().parse(jwtToken);
 	}
 
 	/**
@@ -58,7 +61,6 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(claims.getSubject(), null,
 				authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
 		SecurityContextHolder.getContext().setAuthentication(auth);
-
 	}
 
 	private boolean existeJWTToken(HttpServletRequest request, HttpServletResponse res) {

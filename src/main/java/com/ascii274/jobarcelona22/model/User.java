@@ -14,6 +14,8 @@ public class User {
     private String rol;
     @Field(name="password")
     private String password;
+    @Field(name = "token")
+    private String token;
 
     public User(){
 
@@ -51,13 +53,22 @@ public class User {
         this.password = password;
     }
 
-   @Override
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    @Override
     public String toString() {
         return "User{" +
                 "username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", rol='" + rol + '\'' +
                 ", password='" + password + '\'' +
+                ", token='" + token + '\'' +
                 '}';
     }
 }

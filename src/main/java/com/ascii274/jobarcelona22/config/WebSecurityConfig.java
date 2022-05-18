@@ -14,9 +14,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired(required = false)
+//    @Autowired(required = false)
 //    @Autowired
-    JWTAuthorizationFilter jwtAuthorizationFilter;
+//    JWTAuthorizationFilter jwtAuthorizationFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -26,7 +26,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/jobarcelona/test").permitAll()
                 .antMatchers(HttpMethod.POST, "/jobarcelona/login").permitAll()
                 .antMatchers(HttpMethod.POST, "/jobarcelona/signup").permitAll()
-                .antMatchers(HttpMethod.GET, "/jobarcelona/users").permitAll()
+//                .antMatchers(HttpMethod.GET, "/jobarcelona/users")
                 .anyRequest().authenticated();
     }
 
