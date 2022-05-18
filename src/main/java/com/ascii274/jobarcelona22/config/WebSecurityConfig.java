@@ -14,10 +14,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-//    @Autowired(required = false)
-//    @Autowired
-//    JWTAuthorizationFilter jwtAuthorizationFilter;
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()

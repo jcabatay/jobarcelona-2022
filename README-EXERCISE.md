@@ -1,6 +1,6 @@
 ### Sobre el ejercicio:
 
-Task 1 → Que se conecte al puerto: 3030 -> Ok
+Task 1 → Que se conecte al puerto: 3030 
 
 Task 2 → Las variables de entorno no se deben subir a github, 
             pero tiene que haber un template que permita conocer cuales son las necesarias.
